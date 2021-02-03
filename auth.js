@@ -1,5 +1,6 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const GithubStrategy = require('passport-github').Strategy;
 const bcrypt = require('bcrypt');
 const { ObjectID } = require('mongodb');
 
@@ -15,14 +16,24 @@ module.exports = (app, myDatabase) => {
     });
     
     passport.use(new LocalStrategy(
-    (username, password, done) => {
-        myDatabase.findOne({ username: username }, (err, user) => {
-        console.log(`User ${username} attempted to log in.`);
-        if(err) { return done(err); }
-        if(!user) { return done(null, false); }
-        if(!bcrypt.compareSync(password, user.password)) { return done(null, false); }
-        return done(null, user);
-        });
+        (username, password, done) => {
+            myDatabase.findOne({ username: username }, (err, user) => {
+            console.log(`User ${username} attempted to log in.`);
+            if(err) { return done(err); }
+            if(!user) { return done(null, false); }
+            if(!bcrypt.compareSync(password, user.password)) { return done(null, false); }
+            return done(null, user);
+            });
+        }
+    ));
+
+    passport.use(new GithubStrategy({
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: 'https://qafcc-bintang.herokuapp.com/auth/github/callback'
+    }, 
+    (accessToken, refreshToken, profile, done) => {
+        console.log(profile);
     }
     ));
 }
