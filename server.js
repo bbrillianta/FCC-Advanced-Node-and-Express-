@@ -74,12 +74,20 @@ myDB(async client => {
   io.on('connection', socket => {
     ++currentUsers;
 
-    io.emit('user count', currentUsers);
+    io.emit('user', {
+      name: socket.req.user.username,
+      currentUsers,
+      connected: true
+    });
 
     socket.on('disconnect', () => {
       --currentUsers;
 
-      io.emit('user count', currentUsers);
+      io.emit('user', {
+        name: socket.req.user.username,
+        currentUsers,
+        connected: false
+      });
       
       console.log('A user has disconnected');
     });
