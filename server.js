@@ -75,7 +75,7 @@ myDB(async client => {
     ++currentUsers;
 
     io.emit('user', {
-      name: socket.req.user.username,
+      name: socket.request.user.username,
       currentUsers,
       connected: true
     });
@@ -84,7 +84,7 @@ myDB(async client => {
       --currentUsers;
 
       io.emit('user', {
-        name: socket.req.user.username,
+        name: socket.request.user.username,
         currentUsers,
         connected: false
       });
