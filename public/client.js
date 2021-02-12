@@ -9,11 +9,16 @@ $(document).ready(function () {
     $('#messages').append($('<li>').html('<b>' + message + '</b>'));
   });
 
+  socket.on('chat message', data => {
+    const { message, name } = data;
+    $('#messages').append($('<li>').html(`${name}: ${message}`));
+  })
+
   // Form submittion with new message in field with id 'm'
   $('form').submit(function () {
     var messageToSend = $('#m').val();
 
-    $('#m').val('');
+    socket.emit('chat message', messageToSend);
     return false; // prevent form submit from refreshing page
   });
 });
